@@ -6,7 +6,6 @@ require(R.utils)
 require(sf)
 require(dplyr)
 require(raster)
-setwd('A:/research/ecospatial_services/seak_preservation/')
 mkdirs('data/admin/')
 
 # FILES TO DOWNLOAD ----------------------------------------------------------
@@ -47,12 +46,16 @@ nf.aeac.shp <- nf.shp %>% st_transform(nam.aeac.crs)
 nf.aeac.shp <- nf.aeac.shp %>% filter(NFSLANDU_1 == 'National Forest')
 st_write(nf.aeac.shp, dsn = 'data/admin/national_forests_aeac.shp', append = F)
 
+sak.nf.aeac.shp <- nf.aeac.shp %>% filter(NFSLANDU_2 == "Tongass National Forest" | NFSLANDU_2 == "Chugach National Forest")
+st_write(sak.nf.aeac.shp, dsn = 'data/admin/southern_alaska_national_forests_aeac.shp', append = F)
+
+
 wilderness.shp <- wilderness.shp %>% st_set_crs(nad83.crs) 
 wilderness.aeac.shp <- wilderness.shp %>% st_transform(nam.aeac.crs)
 st_write(wilderness.aeac.shp, dsn = 'data/admin/wilderness_aeac.shp', append = F)
 
 roadless.shp <- roadless.shp %>% st_set_crs(nad83.crs) 
 roadless.aeac.shp <- roadless.shp %>% st_transform(nam.aeac.crs)
-st_write(roadless.aeac.shp, dsn = 'data/admin/roadless_aeac.shp', append = F)
+st_write(roadless.aeac.shp, dsn = 'data/admin/nf_roadless_aeac.shp', append = F)
 
 # END SCRIPT ---------------------------------------------------------------

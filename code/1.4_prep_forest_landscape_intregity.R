@@ -1,4 +1,3 @@
-# Download PRISM climate norms (1981-2010) for Alaska and the CONUS
 # Date: 2021-08-15
 rm(list=ls())
 require(R.utils)
@@ -10,6 +9,7 @@ setwd('A:/research/ecospatial_services/seak_preservation/')
 mkdirs('data/forest_landscape_integrity/')
 nam.aeac.crs <- CRS('+proj=aea +lat_1=20 +lat_2=60 +lat_0=40 +lon_0=-96 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs')
 extnt <- c(-4000000,-1700000,2100000,4300000)
+
 # FILES TO DOWNLOAD ----------------------------------------------------------------
 flii.url <- 'https://drive.google.com/file/d/1EHt_2Zah5-wCV7JRDafw297HeX80Kh6_/view?usp=sharing'
 
