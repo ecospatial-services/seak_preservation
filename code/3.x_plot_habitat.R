@@ -6,7 +6,7 @@ require(data.table)
 require(ggplot2)
 require(egg) # for tag_facet() 
 require(tidytext) # for reorder_within()
-setwd('A:/research/ecospatial_services/seak_preservation/')
+setwd('A:/research/ecospatial/seak_preservation/')
 
 # LOAD FILES =============================================================================
 nf.habitat.dt <- fread('output/natl_forest_habitat_data_extraction.csv')
@@ -26,6 +26,10 @@ nf.habitat.dt[, sp.area.rank := rank(-sp.area.pcnt), by = c('sp.name')]
 nf.habitat.dt[, nf.label := nf.name]
 nf.habitat.dt[, nf.label := factor(gsub(' National Forest','', nf.label))]
 
+# add colors to Tongass and Chugach
+nf.habitat.dt[, nf.col := 'gray60']
+nf.habitat.dt[nf.label == "Tongass" | nf.label == 'Chugach', nf.col := 'red']
+
 # select top N NFs with most habitat for each species  
 nf.habitat.dt <- data.table(nf.habitat.dt, key = "area.km2")
 nf.habitat.topN.dt <- nf.habitat.dt[, tail(.SD, 5), by = c('sp.name')]
@@ -43,25 +47,19 @@ nf.habitat.topN.dt
 nf.habitat.topN.dt <- nf.habitat.topN.dt %>% mutate(nf.label = reorder_within(nf.label, area.km2, sp.name))
   
 # PLOT HABITAT EXTENT FOR EACH TOP NATIONAL FOREST ============================
-habitat.fig <- ggplot(nf.habitat.topN.dt, aes(x=nf.label, y=area.km2)) + 
-  facet_wrap(~sp.name, nrow = 3, scales = "free_y") + 
+ggplot(nf.habitat.topN.dt, aes(x=nf.label, y=area.km2, color = nf.col)) + 
+  facet_wrap(~sp.name, ncol = 3, scales = "free_y") + 
   coord_flip() + 
   scale_x_reordered() +
   scale_y_continuous(limits = c(0, 46000), expand = c(0,0)) + 
-  geom_bar(stat = "identity") + 
-  geom_text(aes(label = sp.area.pcnt.lab), position = position_dodge(width = 1), hjust = -0.25, vjust = 0.25, color = 'black', size = 3) + 
-  theme_bw() + theme(axis.text=element_text(size=12), 
-                     axis.title=element_text(size=14),
-                     strip.text=element_text(size=12)) + 
+  geom_bar(fill = 'yellow', color = nf.habitat.topN.dt$nf.col, stat = "identity", size = 0.5, alpha = 0.75) + 
+  geom_text(aes(label = sp.area.pcnt.lab), position = position_dodge(width = 1), hjust = -0.25, vjust = 0.25, color = 'black', size = 5) + 
+  theme_bw() + theme(axis.text=element_text(size=14), 
+                     axis.title=element_text(size=16),
+                     strip.text=element_text(size=18)) + 
   labs(x = "", y = expression('Habitat extent (km'^2*')'))
 
-habitat.fig
 
-# tag_facet(habitat.fig, open = '', close = '', x = 4, y = 20, vjust = 0.75, size = 5)
-
-ggsave('figures/figure X habitat extent.jpg', width = 4, height = 6, units = 'in', dpi = 400)
+ggsave('figures/figure X habitat extent.jpg', width = 13.5, height = 3, units = 'in', dpi = 400)
 
 # END SCRIPT ==============================================================================================
-
-
-

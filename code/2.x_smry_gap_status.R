@@ -52,5 +52,12 @@ sak.nf.gap.smry.dt <- cbind(sak.nf.gap.smry.dt, sak.nf.forest.carbon.gap.smry.dt
 
 fwrite(sak.nf.gap.smry.dt, 'output/sak_natl_forest_gap_status_summary.csv')
 
+require(dplyr)
+require(sf)
+nf.sf <- read_sf('data/admin/national_forests_aeac.shp')
+xx <- nf.sf %>% filter(NFSLANDU_2 == 'Tongass National Forest' | NFSLANDU_2 == 'Chugach National Forest')
+xx$GIS_ACRES/247.105
+
+sak.nf.gap.smry.dt[, .(land.km2 = sum(land.km2), forest.km2 = sum(forest.km2)), by = 'nf.name']
 
 sum(sak.nf.gap.smry.dt$land.km2)

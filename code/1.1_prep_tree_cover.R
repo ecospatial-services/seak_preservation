@@ -2,9 +2,10 @@
 rm(list=ls())
 require(R.utils)
 require(terra)
+require(raster)
 require(gdalUtilities)
 require(gdalUtils)
-setwd('A:/research/ecospatial_services/seak_preservation/')
+setwd('A:/research/ecospatial/seak_preservation/')
 mkdirs('data/tree_cover/')
 mkdirs('data/tmp/tree_cover/')
 wgs84.crs <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
@@ -55,6 +56,7 @@ mosaic_rasters(gdalfile = files.in,
 # REPROJECT RASTER ------------------------------------------------------------------
 mkdirs('data/tmp/tree_cover/2_proj/')
 
+# 300 m resolution ---------------
 gdalwarp(srcfile = 'data/tmp/tree_cover/1_mosaic/glad_treecover_2010_north_america_30m_wgs84.tif',
          dstfile = 'data/tree_cover/glad_treecover_2010_north_america_300m_aeac.tif',
          t_srs = as.character(nam.aeac.crs), 
@@ -69,6 +71,24 @@ plot(rr)
 # Identify forest lands
 forest.r <- rr >= 10
 writeRaster(forest.r, 'data/tree_cover/glad_forestland_2010_north_america_300m_aeac.tif')
+
+
+# 30 m resolution ------------------- 
+gdalwarp(srcfile = 'data/tmp/tree_cover/1_mosaic/glad_treecover_2010_north_america_30m_wgs84.tif',
+         dstfile = 'data/tree_cover/glad_treecover_2010_north_america_30m_aeac.tif',
+         t_srs = as.character(nam.aeac.crs), 
+         dstnodata = 254, r = 'bilinear', tr = c(30,30), te = extnt, 
+         ot = 'Byte', overwrite = T)
+
+# check output
+rr <- rast('data/tree_cover/glad_treecover_2010_north_america_30m_aeac.tif')
+rr  
+plot(rr)
+
+# Identify forest lands
+forest.r <- rr >= 10
+writeRaster(forest.r, 'data/tree_cover/glad_forestland_2010_north_america_30m_aeac.tif')
+
 
 # END SCRIPT ----------------------------------------------------------
 # mkdirs('data/tmp/tree_cover/1_proj/')

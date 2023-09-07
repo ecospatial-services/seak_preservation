@@ -47,7 +47,28 @@ ggsave('figures/figure 2 forest intactness vs area.jpg', width = 8, height = 5, 
 nf.dt[fed == 1, .(flii.avg = mean(flii, na.rm=T),
                   flii.sd = sd(flii, na.rm=T))]
 
+# proportion of NFs that have atleast some high-integrity forest
+length(unique(nf.dt[flii >= 9.6 & fed == 1]$nf.name)) / length(unique(nf.dt$nf.name))
 
 # END SCRIPT =======================================================================================================
 nf.smry.dt <- nf.smry.dt[nf.label != 'Tongass' | nf.label != 'Chugach']
 
+seak.nf.dt <- nf.dt[nf.name == 'Tongass National Forest' | nf.name == 'Chugach National Forest']
+
+ggplot(nf.dt, aes(x = flii)) + 
+  geom_histogram(bins = 100, alpha = 0.2) + 
+  geom_histogram(data = seak.nf.dt, aes(color = nf.name), bins = 100, alpha = 0.2, stacked = T)
+
+
+ggplot(nf.dt, aes(x = flii, fill = nf.name)) + 
+  geom_histogram(bins = 100, alpha = 0.7) + 
+  theme(legend.position = 'none')
+        
+  geom_histogram(data = seak.nf.dt, aes(color = nf.name), bins = 100, alpha = 0.2, stacked = T)
+
+       
+  
+cor.test(nf.dt$flii, nf.dt$agc.MgCha)
+
+cor.test(nf.dt$treecov, nf.dt$agc.MgCha, method = 'spearman')
+plot(nf.dt$treecov, nf.dt$agc.MgCha)
